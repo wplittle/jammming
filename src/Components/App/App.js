@@ -12,7 +12,8 @@ class App extends Component {
     this.state = {
       searchResults: [],
       playlistName: 'New Playlist',
-      playlistTracks: []
+      playlistTracks: [],
+      searchTerm: ''
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -20,6 +21,7 @@ class App extends Component {
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
+    this.updateSearchTerm = this.updateSearchTerm.bind(this);
   }
 
   render() {
@@ -27,7 +29,7 @@ class App extends Component {
       <div>
         <h1>Ja<span className="highlight">mmm</span>ing</h1>
         <div className="App">
-          <SearchBar onSearch={this.search}/>
+          <SearchBar onSearch={this.search} onTermChange={this.updateSearchTerm}/>
           <div className="App-playlist">
             <SearchResults searchResults={this.state.searchResults}
                            onAdd={this.addTrack}/>
@@ -44,13 +46,13 @@ class App extends Component {
 
   addTrack(track) {
     let tempPlaylist = this.state.playlistTracks;
-    var found = false;
-    for(var i=0; i<tempPlaylist.length; i++) {
+    let found = false;
+    for(let i=0; i<tempPlaylist.length; i++) {
       if (tempPlaylist[i].id === track.id) {
         found = true;
         break;
       }
-    };
+    }
 
     if (found === false) {
       tempPlaylist.push(track);
@@ -77,14 +79,18 @@ class App extends Component {
       });
   }
 
-  search(term) {
-    if (term.length > 0) {
-      Spotify.search(term).then(results => {
+  search() {
+    if (this.state.searchTerm.length > 0) {
+      Spotify.search(this.state.searchTerm).then(results => {
         this.setState({searchResults: results})
       });
     } else {
       this.setState({searchResults: []});
     }
+  }
+
+  updateSearchTerm(term) {
+    this.setState({searchTerm: term});
   }
 }
 
